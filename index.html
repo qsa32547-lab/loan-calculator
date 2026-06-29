@@ -137,23 +137,21 @@
             flex: 1;
             margin-bottom: 0;
         }
-        .line-btn {
+        .submit-btn {
             width: 100%;
             padding: 14px;
             background-color: #06C755;
             color: white;
             border: none;
             border-radius: 4px;
-            font-size: 16px;
+            font-size: 17px;
             cursor: pointer;
             font-weight: bold;
             margin-top: 5px;
             text-align: center;
             box-sizing: border-box;
-            display: block;
-            text-decoration: none;
         }
-        .line-btn:hover {
+        .submit-btn:hover {
             background-color: #05b04b;
         }
         .phone-call {
@@ -171,19 +169,16 @@
 <div class="container">
     <h2>初步試算轉貸銀行可節省金額</h2>
     
-    <!-- 選擇客群目前的借款種類 -->
     <div class="tab-container">
         <div class="tab active" id="tabA" onclick="switchTab('A')">民間純繳息</div>
         <div class="tab" id="tabB" onclick="switchTab('B')">融資本利攤還</div>
     </div>
     
-    <!-- 共同輸入：總金額 -->
     <div class="form-group">
         <label id="amountLabel">目前民間借款總金額 (萬元)：</label>
         <input type="number" id="loanAmount" placeholder="例如：100" min="1">
     </div>
     
-    <!-- 動態輸入：月繳金額 -->
     <div class="form-group">
         <label id="payLabel">目前每月只繳的民間利息 (元)：</label>
         <input type="number" id="currentMonthlyPay" placeholder="例如：20000" min="1">
@@ -201,7 +196,7 @@
             <div class="result-item">整合後 <span id="resultTypeLabel">每月可省下</span>：<span id="monthlySavings" class="highlight">0</span> 元</div>
             <div class="result-item">整合後 **每年可省下**：<span id="yearlySavings" class="highlight">0</span> 元</div>
             
-            <!-- 客戶聯絡資訊與一鍵複製+導向 LINE 區塊 -->
+            <!-- 客戶資訊自動同步表單區 -->
             <div class="contact-section">
                 <div class="contact-title">✨ 免費保留精準轉貸額度規劃 ✨</div>
                 
@@ -216,8 +211,7 @@
                     </div>
                 </div>
                 
-                <!-- 調整觸發機制 -->
-                <button class="line-btn" onclick="copyAndGoToLine()">💬 複製試算結果並聯絡朱經理</button>
+                <button class="submit-btn" onclick="submitDataToBackend()">送出並保留精準規劃 (加 LINE)</button>
                 
                 <div style="text-align: center;">
                     <a href="tel:0905357761" class="phone-call">📞 或直接來電聯絡：0905-357761</a>
@@ -226,6 +220,9 @@
         </div>
     </div>
 </div>
+
+<!-- 隱藏的跨網域傳送用框架，防止網頁提交時跳轉跳離首頁 -->
+<iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
 
 <script>
 var currentType = 'A';
@@ -287,7 +284,7 @@ function calculateSavings() {
     if (currentType === 'A') {
         document.getElementById('resultTypeLabel').innerText = '每月可省下 (且銀行內含還本金)';
     } else {
-        document.getElementById('resultTypeLabel').innerText = '每月負負擔直接降低';
+        document.getElementById('resultTypeLabel').innerText = '每月負擔直接降低';
     }
     
     if (globalSavingsMonth > 0) {
@@ -302,42 +299,53 @@ function calculateSavings() {
     }
 }
 
-// 升級版：背景自動複製文字 + 彈向 LINE 視窗
-function copyAndGoToLine() {
+// 核心功能：背景自動秒傳 Google 表單後台資料庫
+function submitDataToBackend() {
     var name = document.getElementById('clientName').value.trim();
     var phone = document.getElementById('clientPhone').value.trim();
     
     if (!name || !phone) {
-        alert('請填寫您的姓氏與聯繫電話，方便朱經理為您精準規劃保留喔！');
+        alert('請填寫您的姓氏與聯繫電話，以便為您登記保留精準方案額度！');
         return;
     }
     
     var typeText = (currentType === 'A') ? "民間純繳息" : "融資本利攤還";
     
-    // 組裝精美試算文字
-    var message = "您好，我是 " + name + "，手機號碼是 " + phone + "。\n";
-    message += "我剛剛使用了您的轉貸銀行整合試算工具，結果如下：\n";
-    message += "• 目前借款型態：" + typeText + "\n";
-    message += "• 借款總金額：" + globalAmountWan + " 萬元\n";
-    message += "• 轉貸銀行後每月預估可省下：" + globalSavingsMonth.toLocaleString() + " 元\n";
-    message += "• 轉貸銀行後每年預估可省下：" + globalSavingsYear.toLocaleString() + " 元\n";
-    message += "希望能進一步安排免費諮詢，謝謝朱經理！";
+    // 您的專屬 Google 表單背後提交端點
+    var formAction = "https://docs.google.com/forms/d/e/1FAIpQLSea_RmGipK2d38A6NdrUhi0-gFLGhEYt16-oiYzyx0LZKhvNQ/formResponse";
     
-    // 執行現代瀏覽器自動複製
-    navigator.clipboard.writeText(message).then(function() {
-        alert('【系統提示】\n已自動為您複製好您的試算數據！\n\n點擊確定後將開啟朱經理的 LINE，請在聊天框「長按貼上」並發送即可！');
-        window.open("https://line.me/ti/p/639F0l6saX", '_blank');
-    }).catch(function(err) {
-        // 備份相容極舊手機方案
-        var textArea = document.createElement("textarea");
-        textArea.value = message;
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textArea);
-        alert('【系統提示】\n已自動為您複製好您的試算數據！\n\n點擊確定後將開啟朱經理的 LINE，請在聊天框「長按貼上」並發送即可！');
-        window.open("https://line.me/ti/p/639F0l6saX", '_blank');
-    });
+    // 動態封裝建立隱形表單傳送
+    var form = document.createElement("form");
+    form.action = formAction;
+    form.method = "POST";
+    form.target = "hidden_iframe"; // 指向隱藏框架，絕不跳轉中斷
+    
+    // 經精確計算對應的 Google 欄位代碼
+    var fields = {
+        "entry.2062540939": name,                        // 欄位 1：客戶姓氏
+        "entry.1744641662": phone,                       // 欄位 2：聯繫電話
+        "entry.1884786438": typeText,                    // 欄位 3：目前借款型態
+        "entry.1011110034": globalAmountWan + " 萬",     // 欄位 4：借款總金額(萬)
+        "entry.1706240212": "每月省 " + globalSavingsMonth.toLocaleString() + " 元 / 每年省 " + globalSavingsYear.toLocaleString() + " 元" // 欄位 5：預估省下金額
+    };
+    
+    for (var key in fields) {
+        if (fields.hasOwnProperty(key)) {
+            var input = document.createElement("input");
+            input.type = "hidden";
+            input.name = key;
+            input.value = fields[key];
+            form.appendChild(input);
+        }
+    }
+    
+    document.body.appendChild(form);
+    form.submit(); // 背景秒傳送
+    document.body.removeChild(form);
+    
+    // 雙重保障成功後提示並一秒導航到 LINE 對接
+    alert('【方案額度登記成功】\n已成功將您的初步試算資料為您保留！\n按下確定後將為您開啟朱經理的 LINE，歡迎直接發送訊息與經理對接諮詢！');
+    window.open("https://line.me/ti/p/639F0l6saX", '_blank');
 }
 </script>
 
