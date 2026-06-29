@@ -27,7 +27,6 @@
             margin-bottom: 25px;
             font-size: 22px;
         }
-        /* 頁籤切換樣式 */
         .tab-container {
             display: table;
             width: 100%;
@@ -117,35 +116,54 @@
             color: #7f8c8d;
             margin-top: 2px;
         }
-        /* 聯絡區塊樣式 */
+        /* 聯絡與資訊傳送區塊樣式 */
         .contact-section {
             margin-top: 20px;
             padding-top: 15px;
             border-top: 2px dashed #2cc990;
-            text-align: center;
         }
         .contact-title {
             font-weight: bold;
             font-size: 16px;
             color: #2c3e50;
-            margin-bottom: 12px;
+            margin-bottom: 15px;
+            text-align: center;
         }
-        .qr-code {
-            width: 160px;
-            height: 160px;
-            margin: 0 auto 10px auto;
+        .input-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .input-row .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+        .line-btn {
+            width: 100%;
+            padding: 14px;
+            background-color: #06C755;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 5px;
+            text-align: center;
+            box-sizing: border-box;
             display: block;
-            border: 1px solid #ddd;
-            padding: 5px;
-            background: #fff;
+            text-decoration: none;
+        }
+        .line-btn:hover {
+            background-color: #05b04b;
         }
         .phone-call {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             color: #27ae60;
             text-decoration: none;
             display: inline-block;
-            margin-top: 5px;
+            margin-top: 15px;
         }
     </style>
 </head>
@@ -178,20 +196,34 @@
     <!-- 結果輸出區 -->
     <div class="result-wrapper" id="resultWrapper">
         <div class="result-box">
-            <div class="box-title">🏦 規劃轉貸銀行方案 (固定20年期 / 利率2.5% 本利攤還)</div>
+            <!-- 標題正式更新 -->
+            <div class="box-title">📊 初步試算轉貸後省下金額</div>
             <div class="result-item">銀行預估每月還款金額：<span id="bankMonthlyPay" style="font-weight: bold; color: #2c3e50;">0</span> 元</div>
             <hr style="border: 0; border-top: 1px dashed #ccc; margin: 10px 0;">
             <div class="result-item">整合後 <span id="resultTypeLabel">每月可省下</span>：<span id="monthlySavings" class="highlight">0</span> 元</div>
             <div class="result-item">整合後 **每年可省下**：<span id="yearlySavings" class="highlight">0</span> 元</div>
             
-            <!-- 專屬聯絡與引流區塊 -->
+            <!-- 客戶聯絡資訊與一鍵 LINE 傳送區塊 -->
             <div class="contact-section">
-                <div class="contact-title">✨ 免費精準轉貸規劃 · 歡迎立即諮詢 ✨</div>
-                <!-- 讀取同目錄下的 朱祐岑QR.jpg -->
-                <img class="qr-code" src="朱祐岑QR.jpg" alt="LINE 線上諮詢 QR Code">
-                <div style="font-size: 14px; color: #555; font-weight: bold; margin-bottom: 5px;">【 掃描上方 QR Code 加 LINE 諮詢 】</div>
-                <div style="font-size: 14px; color: #7f8c8d;">或直接來電聯絡專員：</div>
-                <a href="tel:0905357761" class="phone-call">📞 朱經理：0905-357761</a>
+                <div class="contact-title">✨ 免費保留精準轉貸額度規劃 ✨</div>
+                
+                <div class="input-row">
+                    <div class="form-group">
+                        <label for="clientName">您的姓氏：</label>
+                        <input type="text" id="clientName" placeholder="例如：陳先生 / 林小姐">
+                    </div>
+                    <div class="form-group">
+                        <label for="clientPhone">聯繫電話：</label>
+                        <input type="tel" id="clientPhone" placeholder="例如：0912345678">
+                    </div>
+                </div>
+                
+                <!-- 刪除 QR 碼，改為一鍵打包資料對接 LINE -->
+                <button class="line-btn" onclick="sendToLine()">💬 點我傳送試算結果給朱經理</button>
+                
+                <div style="text-align: center;">
+                    <a href="tel:0905357761" class="phone-call">📞 或直接來電聯絡：0905-357761</a>
+                </div>
             </div>
         </div>
     </div>
@@ -199,6 +231,9 @@
 
 <script>
 var currentType = 'A';
+var globalSavingsMonth = 0;
+var globalSavingsYear = 0;
+var globalAmountWan = 0;
 
 function switchTab(type) {
     currentType = type;
@@ -222,18 +257,18 @@ function switchTab(type) {
 }
 
 function calculateSavings() {
-    var amountWan = parseFloat(document.getElementById('loanAmount').value);
+    globalAmountWan = parseFloat(document.getElementById('loanAmount').value);
     var currentPay = parseFloat(document.getElementById('currentMonthlyPay').value);
     
     var bankYears = 20;
     var bankAnnualRate = 2.5; 
     
-    if (isNaN(amountWan) || isNaN(currentPay)) {
+    if (isNaN(globalAmountWan) || isNaN(currentPay)) {
         alert('請填寫完整的試算資料喔！');
         return;
     }
     
-    var principal = amountWan * 10000;
+    var principal = globalAmountWan * 10000;
     var months = bankYears * 12;
     var monthlyRate = (bankAnnualRate / 100) / 12;
     
@@ -245,8 +280,8 @@ function calculateSavings() {
     }
     bankPay = Math.round(bankPay);
     
-    var savingsPerMonth = currentPay - bankPay;
-    var savingsPerYear = savingsPerMonth * 12;
+    globalSavingsMonth = currentPay - bankPay;
+    globalSavingsYear = globalSavingsMonth * 12;
     
     document.getElementById('resultWrapper').style.display = 'block';
     document.getElementById('bankMonthlyPay').innerText = bankPay.toLocaleString();
@@ -257,16 +292,44 @@ function calculateSavings() {
         document.getElementById('resultTypeLabel').innerText = '每月負擔直接降低';
     }
     
-    if (savingsPerMonth > 0) {
+    if (globalSavingsMonth > 0) {
         document.getElementById('monthlySavings').className = 'highlight';
-        document.getElementById('monthlySavings').innerText = savingsPerMonth.toLocaleString();
-        document.getElementById('yearlySavings').innerText = savingsPerYear.toLocaleString();
+        document.getElementById('monthlySavings').innerText = globalSavingsMonth.toLocaleString();
+        document.getElementById('yearlySavings').innerText = globalSavingsYear.toLocaleString();
     } else {
         document.getElementById('monthlySavings').className = '';
         document.getElementById('monthlySavings').style.color = '#7f8c8d';
         document.getElementById('monthlySavings').innerText = '0 (此條件下原月付已極低)';
         document.getElementById('yearlySavings').innerText = '0';
     }
+}
+
+// 自動打包資料並一鍵發送到朱經理的 LINE
+function sendToLine() {
+    var name = document.getElementById('clientName').value.trim();
+    var phone = document.getElementById('clientPhone').value.trim();
+    
+    if (!name || !phone) {
+        alert('請填寫您的姓氏與聯繫電話，方便朱經理為您精準規劃保留喔！');
+        return;
+    }
+    
+    var typeText = (currentType === 'A') ? "民間純繳息" : "融資本利攤還";
+    
+    // 組裝精美開發訊息
+    var message = "您好，我是 " + name + "，手機號碼是 " + phone + "。\n";
+    message += "我剛剛使用了您的轉貸銀行整合試算工具，結果如下：\n\n";
+    message += "• 目前借款型態：" + typeText + "\n";
+    message += "• 借款總金額：" + globalAmountWan + " 萬元\n";
+    message += "• 轉貸銀行後每月預估可省下：" + globalSavingsMonth.toLocaleString() + " 元\n";
+    message += "• 轉貸銀行後每年預估可省下：" + globalSavingsYear.toLocaleString() + " 元\n\n";
+    message += "希望能進一步安排免費諮詢，謝謝朱經理！";
+    
+    // 你的專屬 LINE 連結加上文字參數
+    var lineUrl = "https://line.me/ti/p/639F0l6saX?text=" + encodeURIComponent(message);
+    
+    // 開啟跳轉
+    window.open(lineUrl, '_blank');
 }
 </script>
 
