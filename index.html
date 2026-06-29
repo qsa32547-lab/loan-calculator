@@ -211,7 +211,7 @@
                     </div>
                 </div>
                 
-                <button class="submit-btn" onclick="silentSubmitToGoogle()">送出並保留精準規劃 (加 LINE)</button>
+                <button class="submit-btn" onclick="silentSubmitToGoogle()">送出並登記初步試算資料</button>
                 
                 <div style="text-align: center;">
                     <a href="tel:0905357761" class="phone-call">📞 或直接來電聯絡：0905-357761</a>
@@ -221,7 +221,6 @@
     </div>
 </div>
 
-<!-- 真正完全隱藏的背景通道，對準新表單發射資料 -->
 <iframe name="silent_backdoor_frame" id="silent_backdoor_frame" style="display:none;"></iframe>
 
 <script>
@@ -299,7 +298,6 @@ function calculateSavings() {
     }
 }
 
-// 完美修正版：對準全新精準表單 ID 與欄位代碼
 function silentSubmitToGoogle() {
     var name = document.getElementById('clientName').value.trim();
     var phone = document.getElementById('clientPhone').value.trim();
@@ -312,7 +310,6 @@ function silentSubmitToGoogle() {
     var typeText = (currentType === 'A') ? "民間純繳息" : "融資本利攤還";
     var savingsText = "每月省 " + globalSavingsMonth.toLocaleString() + " 元 / 每年省 " + globalSavingsYear.toLocaleString() + " 元";
     
-    // 修正為您最新的真實 Google 表單傳送網址
     var formAction = "https://docs.google.com/forms/d/e/1FAIpQLSea_RmGipK2d38A6NdrUhi0-gFLGhEYt16-oiYzyx0LZKhvNQ/formResponse";
     
     var targetForm = document.createElement("form");
@@ -320,11 +317,10 @@ function silentSubmitToGoogle() {
     targetForm.method = "POST";
     targetForm.target = "silent_backdoor_frame"; 
     
-    // 重新精準對齊您抓出來的 5 組 Entry ID
     var dataMapping = {
         "entry.1827805292": name,                        
         "entry.486407009": phone,                       
-        "entry.1713018944": typeText,                    
+        "entry.1713018944": typeText,                   
         "entry.1576907279": globalAmountWan + " 萬",     
         "entry.2109757796": savingsText
     };
@@ -343,8 +339,7 @@ function silentSubmitToGoogle() {
     targetForm.submit(); 
     document.body.removeChild(targetForm);
     
-    alert('【方案額度登記成功】\n已成功將您的初步試算資料為您保留！\n即將為您開啟 LINE 與規劃師進一步對接諮詢。');
-    window.open("https://line.me/ti/p/QgM9HRJ4P_", '_blank');
+    alert('【資料登記成功】\n感謝您填寫資料，專員已收到您的試算需求，將會盡快與您聯繫。');
 }
 </script>
 
