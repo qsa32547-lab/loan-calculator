@@ -20,10 +20,10 @@
         .result-item { margin-bottom: 10px; font-size: 15px; }
         .highlight { font-weight: bold; color: #e74c3c; font-size: 17px; }
         .contact-section { margin-top: 15px; padding-top: 15px; border-top: 2px dashed #2cc990; }
-        .contact-title { font-weight: bold; text-align: center; margin-bottom: 10px; }
+        .contact-title { font-weight: bold; text-align: center; margin-bottom: 10px; font-size: 15px; }
         .input-row { display: flex; gap: 8px; margin-bottom: 10px; }
-        .submit-btn { width: 100%; padding: 12px; background-color: #06C755; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; }
-        .footer-link { display: block; text-align: center; font-size: 15px; font-weight: bold; color: #27ae60; margin-top: 12px; padding: 10px; border: 1px solid #27ae60; border-radius: 6px; text-decoration: none; }
+        .submit-btn { width: 100%; padding: 12px; background-color: #06C755; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
+        .footer-link { width: 100%; display: block; text-align: center; font-size: 15px; font-weight: bold; color: #27ae60; margin-top: 8px; padding: 12px; border: 1px solid #27ae60; border-radius: 6px; background: white; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -51,9 +51,9 @@
                     <input type="text" id="clientName" placeholder="您的姓氏">
                     <input type="tel" id="clientPhone" placeholder="聯繫電話">
                 </div>
-                <button class="submit-btn" onclick="silentSubmitToGoogle()">送出並登記初步試算資料</button>
-                <a href="https://line.me/ti/p/QgM9HRJ4P_" class="footer-link">點擊加 LINE 了解詳情</a>
-                <a href="tel:0905357761" class="footer-link" style="color: #06C755; border-color: #06C755;">電話聯繫：0905-357761</a>
+                <button class="submit-btn" onclick="submitAndAction('NONE')">送出並登記初步試算資料</button>
+                <button class="footer-link" onclick="submitAndAction('LINE')">點擊加 LINE 了解詳情</button>
+                <button class="footer-link" style="color: #06C755; border-color: #06C755;" onclick="submitAndAction('PHONE')">電話聯繫：0905-357761</button>
             </div>
         </div>
     </div>
@@ -62,7 +62,7 @@
 <iframe name="silent_backdoor_frame" id="silent_backdoor_frame" style="display:none;"></iframe>
 
 <script>
-var currentType = 'A', globalSavingsMonth = 0, globalSavingsYear = 0, globalAmountWan = 0;
+var currentType = 'A', globalSavingsMonth = 0, globalAmountWan = 0;
 
 function switchTab(type) {
     currentType = type;
@@ -75,17 +75,15 @@ function calculateSavings() {
     globalAmountWan = parseFloat(document.getElementById('loanAmount').value);
     var currentPay = parseFloat(document.getElementById('currentMonthlyPay').value);
     if (isNaN(globalAmountWan) || isNaN(currentPay)) { alert('請填寫金額'); return; }
-    
     var principal = globalAmountWan * 10000;
     var bankPay = Math.round((principal * 0.025 / 12 * Math.pow(1 + 0.025 / 12, 240)) / (Math.pow(1 + 0.025 / 12, 240) - 1));
     globalSavingsMonth = currentPay - bankPay;
-    
     document.getElementById('resultWrapper').style.display = 'block';
     document.getElementById('bankMonthlyPay').innerText = bankPay.toLocaleString();
     document.getElementById('monthlySavings').innerText = globalSavingsMonth.toLocaleString();
 }
 
-function silentSubmitToGoogle() {
+function submitAndAction(actionType) {
     var name = document.getElementById('clientName').value.trim();
     var phone = document.getElementById('clientPhone').value.trim();
     if (!name || !phone) { alert('請填寫姓名與電話'); return; }
@@ -93,7 +91,6 @@ function silentSubmitToGoogle() {
     var formAction = "https://docs.google.com/forms/d/e/1FAIpQLSea_RmGipK2d38A6NdrUhi0-gFLGhEYt16-oiYzyx0LZKhvNQ/formResponse";
     var targetForm = document.createElement("form");
     targetForm.action = formAction; targetForm.method = "POST"; targetForm.target = "silent_backdoor_frame";
-    
     var data = {"entry.1827805292": name, "entry.486407009": phone, "entry.1713018944": currentType, "entry.1576907279": globalAmountWan + "萬", "entry.2109757796": globalSavingsMonth};
     for (var key in data) {
         var input = document.createElement("input");
@@ -103,7 +100,10 @@ function silentSubmitToGoogle() {
     document.body.appendChild(targetForm);
     targetForm.submit();
     document.body.removeChild(targetForm);
-    alert('資料已送出！');
+    
+    if (actionType === 'LINE') { window.open("https://line.me/ti/p/QgM9HRJ4P_", '_blank'); }
+    else if (actionType === 'PHONE') { window.location.href = "tel:0905357761"; }
+    else { alert('資料已成功登記！'); }
 }
 </script>
 </body>
