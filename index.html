@@ -194,11 +194,11 @@
             <div class="result-item">銀行預估每月還款金額：<span id="bankMonthlyPay" style="font-weight: bold; color: #2c3e50;">0</span> 元</div>
             <hr style="border: 0; border-top: 1px dashed #ccc; margin: 10px 0;">
             <div class="result-item">整合後 <span id="resultTypeLabel">每月可省下</span>：<span id="monthlySavings" class="highlight">0</span> 元</div>
-            <div class="result-item">整合後 **每年可省下**：<span id="yearlySavings" class="highlight">0</span> 元</div>
+            <div class="result-item">整合後 每年可省下：<span id="yearlySavings" class="highlight">0</span> 元</div>
             
             <!-- 客戶資訊自動同步表單區 -->
             <div class="contact-section">
-                <div class="contact-title">✨ 免費保留精準轉貸額度規劃 ✨</div>
+                <div class="contact-title">✨ 獲取免費諮詢與精準額度規劃 ✨</div>
                 
                 <div class="input-row">
                     <div class="form-group">
@@ -339,7 +339,6 @@ function submitDataToBackend() {
     form.submit(); 
     document.body.removeChild(form);
     
-    // 精簡版提示，並直接導向新的 LINE 連結
     alert('【方案額度登記成功】\n已成功將您的初步試算資料為您保留！\n即將為您開啟 LINE 與規劃師進一步對接諮詢。');
     window.open("https://line.me/ti/p/QgM9HRJ4P_", '_blank');
 }
