@@ -299,7 +299,7 @@ function calculateSavings() {
     }
 }
 
-// 核心功能：背景自動秒傳 Google 表單後台資料庫
+// 核心功能：背景自動傳送 Google 表單後台資料庫
 function submitDataToBackend() {
     var name = document.getElementById('clientName').value.trim();
     var phone = document.getElementById('clientPhone').value.trim();
@@ -310,23 +310,19 @@ function submitDataToBackend() {
     }
     
     var typeText = (currentType === 'A') ? "民間純繳息" : "融資本利攤還";
-    
-    // 您的專屬 Google 表單背後提交端點
     var formAction = "https://docs.google.com/forms/d/e/1FAIpQLSea_RmGipK2d38A6NdrUhi0-gFLGhEYt16-oiYzyx0LZKhvNQ/formResponse";
     
-    // 動態封裝建立隱形表單傳送
     var form = document.createElement("form");
     form.action = formAction;
     form.method = "POST";
-    form.target = "hidden_iframe"; // 指向隱藏框架，絕不跳轉中斷
+    form.target = "hidden_iframe"; 
     
-    // 經精確計算對應的 Google 欄位代碼
     var fields = {
-        "entry.2062540939": name,                        // 欄位 1：客戶姓氏
-        "entry.1744641662": phone,                       // 欄位 2：聯繫電話
-        "entry.1884786438": typeText,                    // 欄位 3：目前借款型態
-        "entry.1011110034": globalAmountWan + " 萬",     // 欄位 4：借款總金額(萬)
-        "entry.1706240212": "每月省 " + globalSavingsMonth.toLocaleString() + " 元 / 每年省 " + globalSavingsYear.toLocaleString() + " 元" // 欄位 5：預估省下金額
+        "entry.2062540939": name,                        
+        "entry.1744641662": phone,                       
+        "entry.1884786438": typeText,                    
+        "entry.1011110034": globalAmountWan + " 萬",     
+        "entry.1706240212": "每月省 " + globalSavingsMonth.toLocaleString() + " 元 / 每年省 " + globalSavingsYear.toLocaleString() + " 元" 
     };
     
     for (var key in fields) {
@@ -340,12 +336,12 @@ function submitDataToBackend() {
     }
     
     document.body.appendChild(form);
-    form.submit(); // 背景秒傳送
+    form.submit(); 
     document.body.removeChild(form);
     
-    // 雙重保障成功後提示並一秒導航到 LINE 對接
-    alert('【方案額度登記成功】\n已成功將您的初步試算資料為您保留！\n按下確定後將為您開啟朱經理的 LINE，歡迎直接發送訊息與經理對接諮詢！');
-    window.open("https://line.me/ti/p/639F0l6saX", '_blank');
+    // 精簡版提示，並直接導向新的 LINE 連結
+    alert('【方案額度登記成功】\n已成功將您的初步試算資料為您保留！\n即將為您開啟 LINE 與規劃師進一步對接諮詢。');
+    window.open("https://line.me/ti/p/QgM9HRJ4P_", '_blank');
 }
 </script>
 
