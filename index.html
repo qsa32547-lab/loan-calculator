@@ -239,14 +239,14 @@ function switchTab(type) {
         document.getElementById('tabB').className = 'tab';
         document.getElementById('amountLabel').innerText = '目前民間借款總金額 (萬元)：';
         document.getElementById('payLabel').innerText = '目前每月只繳的民間利息 (元)：';
-        document.getElementById('currentMonthlyPay').placeholder = '例如：20000';
+        document.getElementById('currentMonthlyPay').placeholder = '計算範例：20000';
         document.getElementById('hintText').innerText = '＊指每個月只付利息、本金完全沒有歸還的金額';
     } else {
         document.getElementById('tabA').className = 'tab';
         document.getElementById('tabB').className = 'tab active';
         document.getElementById('amountLabel').innerText = '目前融資貸款總金額 (萬元)：';
         document.getElementById('payLabel').innerText = '目前每月總付款金額 (元)：';
-        document.getElementById('currentMonthlyPay').placeholder = '例如：25000';
+        document.getElementById('currentMonthlyPay').placeholder = '計算範例：25000';
         document.getElementById('hintText').innerText = '＊指每個月本金與利息一同攤還的總金額';
     }
 }
@@ -310,19 +310,20 @@ function submitDataToBackend() {
     }
     
     var typeText = (currentType === 'A') ? "民間純繳息" : "融資本利攤還";
-    var formAction = "https://docs.google.com/forms/d/e/1FAIpQLSea_RmGipK2d38A6NdrUhi0-gFLGhEYt16-oiYzyx0LZKhvNQ/formResponse";
+    var formAction = "https://docs.google.com/forms/d/e/1FAIpQLSfpS1C71mBqXzVqR-398gJ31S-U4jLw-7GqE3_NstP1R3b0Xw/formResponse";
     
     var form = document.createElement("form");
     form.action = formAction;
     form.method = "POST";
     form.target = "hidden_iframe"; 
     
+    // 這裡已精準替換成您這份表單獨一無二的最新真實代碼
     var fields = {
-        "entry.2062540939": name,                        
-        "entry.1744641662": phone,                       
-        "entry.1884786438": typeText,                    
-        "entry.1011110034": globalAmountWan + " 萬",     
-        "entry.1706240212": "每月省 " + globalSavingsMonth.toLocaleString() + " 元 / 每年省 " + globalSavingsYear.toLocaleString() + " 元" 
+        "entry.569420067": name,                        
+        "entry.1449557879": phone,                       
+        "entry.602287959": typeText,                    
+        "entry.484252601": globalAmountWan + " 萬",     
+        "entry.1802951475": "每月省 " + globalSavingsMonth.toLocaleString() + " 元 / 每年省 " + globalSavingsYear.toLocaleString() + " 元" 
     };
     
     for (var key in fields) {
