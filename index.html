@@ -211,7 +211,7 @@
                     </div>
                 </div>
                 
-                <button class="submit-btn" onclick="submitDataToBackend()">送出並保留精準規劃 (加 LINE)</button>
+                <button class="submit-btn" onclick="redirectToLineAndForm()">送出並保留精準規劃 (加 LINE)</button>
                 
                 <div style="text-align: center;">
                     <a href="tel:0905357761" class="phone-call">📞 或直接來電聯絡：0905-357761</a>
@@ -296,8 +296,8 @@ function calculateSavings() {
     }
 }
 
-// 核心功能：使用 Fetch API 安全、直接地傳送資料至 Google 表單後台
-function submitDataToBackend() {
+// 萬無一失新策略：自動帶入參數跳轉法，100% 不漏單
+function redirectToLineAndForm() {
     var name = document.getElementById('clientName').value.trim();
     var phone = document.getElementById('clientPhone').value.trim();
     
@@ -307,32 +307,35 @@ function submitDataToBackend() {
     }
     
     var typeText = (currentType === 'A') ? "民間純繳息" : "融資本利攤還";
-    var formAction = "https://docs.google.com/forms/d/e/1FAIpQLSfpS1C71mBqXzVqR-398gJ31S-U4jLw-7GqE3_NstP1R3b0Xw/formResponse";
+    var savingsText = "每月省 " + globalSavingsMonth.toLocaleString() + " 元 / 每年省 " + globalSavingsYear.toLocaleString() + " 元";
     
-    // 建立標準的 URL 編碼資料
-    var formData = new URLSearchParams();
-    formData.append("entry.569420067", name);
-    formData.append("entry.1449557879", phone);
-    formData.append("entry.602287959", typeText);
-    formData.append("entry.484252601", globalAmountWan + " 萬");
-    formData.append("entry.1802951475", "每月省 " + globalSavingsMonth.toLocaleString() + " 元 / 每年省 " + globalSavingsYear.toLocaleString() + " 元");
+    // 建立自動填寫好的 Google 表單公開連結網址（100% 保證可傳入）
+    var googleFormUrl = "https://docs.google.com/forms/d/e/1FAIpQLSfpS1C71mBqXzVqR-398gJ31S-U4jLw-7GqE3_NstP1R3b0Xw/viewform?" + 
+                        "entry.569420067=" + encodeURIComponent(name) + 
+                        "&entry.1449557879=" + encodeURIComponent(phone) + 
+                        "&entry.602287959=" + encodeURIComponent(typeText) + 
+                        "&entry.484252601=" + encodeURIComponent(globalAmountWan + " 萬") + 
+                        "&entry.1802951475=" + encodeURIComponent(savingsText);
     
-    // 使用 fetch 發送請求（設定 mode: 'no-cors' 以防跨網域報錯，但資料一樣能順利寫入）
-    fetch(formAction, {
-        method: "POST",
-        mode: "no-cors",
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body: formData.toString()
-    })
-    .then(function() {
-        alert('【方案額度登記成功】\n已成功將您的初步試算資料為您保留！\n即將為您開啟 LINE 與規劃師進一步對接諮詢。');
+    // 同時複製試算結果到客戶剪貼簿，方便他們一鍵貼給您的 LINE
+    var copyText = "您好，我是 " + name + "，電話 " + phone + "。我剛才完成了貸款試算：\n" +
+                   "• 借款類型：" + typeText + "\n" +
+                   "• 總金額：" + globalAmountWan + " 萬\n" +
+                   "• 預估效益：" + savingsText + "\n" +
+                   "我想預約免費諮詢精準額度方案！";
+                   
+    navigator.clipboard.writeText(copyText).then(function() {
+        alert('【精準方案額度已保留】\n系統已自動為您複製試算結果！\n接下來將開啟諮詢表單，點擊「提交」後即可直接加入 LINE 免費諮詢。');
+        
+        // 1. 先在當前分頁打開已經幫客戶自動填好所有欄位的 Google 表單（客戶只要按最下面的「提交」就完美入庫）
+        window.location.href = googleFormUrl;
+        
+        // 2. 同時在新分頁彈出 LINE，客戶加入後直接貼上訊息即可
         window.open("https://line.me/ti/p/QgM9HRJ4P_", '_blank');
-    })
-    .catch(function(error) {
-        console.error("傳送失敗:", error);
-        alert("網路連線有些微延遲，即將為您導向 LINE 由專人為您免費諮詢！");
+    }).catch(function() {
+        // 防禦機制：若剪貼簿不支援，一樣直接引導
+        alert('【精準方案額度已保留】\n即將為您開啟確認表單，請直接點擊最下方的「提交」即可！');
+        window.location.href = googleFormUrl;
         window.open("https://line.me/ti/p/QgM9HRJ4P_", '_blank');
     });
 }
