@@ -196,7 +196,7 @@
             <div class="result-item">整合後 <span id="resultTypeLabel">每月可省下</span>：<span id="monthlySavings" class="highlight">0</span> 元</div>
             <div class="result-item">整合後 每年可省下：<span id="yearlySavings" class="highlight">0</span> 元</div>
             
-            <!-- 客戶資訊自動同步表單區 -->
+            <!-- 客戶資訊區 -->
             <div class="contact-section">
                 <div class="contact-title">✨ 獲取免費諮詢與精準額度規劃 ✨</div>
                 
@@ -211,7 +211,7 @@
                     </div>
                 </div>
                 
-                <button class="submit-btn" onclick="silentSubmitToGoogle()">送出並保留精準規劃 (加 LINE)</button>
+                <button class="submit-btn" onclick="goToOfficialForm()">送出並保留精準規劃 (加 LINE)</button>
                 
                 <div style="text-align: center;">
                     <a href="tel:0905357761" class="phone-call">📞 或直接來電聯絡：0905-357761</a>
@@ -220,9 +220,6 @@
         </div>
     </div>
 </div>
-
-<!-- 💡 核心防阻擋機制：真正完全隱藏的歷史正統網頁標籤，負責在背景偷偷跟 Google 通訊 -->
-<iframe name="silent_backdoor_frame" id="silent_backdoor_frame" style="display:none;"></iframe>
 
 <script>
 var currentType = 'A';
@@ -299,8 +296,8 @@ function calculateSavings() {
     }
 }
 
-// 萬無一失隱藏提交法：在背景建立真實 Form，直接朝隱藏的 iframe 遞交資料，避開所有新型網路封鎖
-function silentSubmitToGoogle() {
+// ☀️ 100% 必勝參數帶入法：直接開啟官方填好畫面的表單，徹底繞過所有伺服器安全封鎖
+function goToOfficialForm() {
     var name = document.getElementById('clientName').value.trim();
     var phone = document.getElementById('clientPhone').value.trim();
     
@@ -311,40 +308,22 @@ function silentSubmitToGoogle() {
     
     var typeText = (currentType === 'A') ? "民間純繳息" : "融資本利攤還";
     var savingsText = "每月省 " + globalSavingsMonth.toLocaleString() + " 元 / 每年省 " + globalSavingsYear.toLocaleString() + " 元";
-    var formAction = "https://docs.google.com/forms/d/e/1FAIpQLSfpS1C71mBqXzVqR-398gJ31S-U4jLw-7GqE3_NstP1R3b0Xw/formResponse";
     
-    // 建立一個實體隱藏 Form 
-    var targetForm = document.createElement("form");
-    targetForm.action = formAction;
-    targetForm.method = "POST";
-    targetForm.target = "silent_backdoor_frame"; // 關鍵：對準隱藏的沙盒，讓網頁絕不跳轉
+    // 利用 Google 官方支援的 viewform 參數帶入格式，這絕不可能被攔截
+    var googleFormUrl = "https://docs.google.com/forms/d/e/1FAIpQLSfpS1C71mBqXzVqR-398gJ31S-U4jLw-7GqE3_NstP1R3b0Xw/viewform?" + 
+                        "entry.569420067=" + encodeURIComponent(name) + 
+                        "&entry.1449557879=" + encodeURIComponent(phone) + 
+                        "&entry.602287959=" + encodeURIComponent(typeText) + 
+                        "&entry.484252601=" + encodeURIComponent(globalAmountWan + " 萬") + 
+                        "&entry.1802951475=" + encodeURIComponent(savingsText);
     
-    var dataMapping = {
-        "entry.569420067": name,                        
-        "entry.1449557879": phone,                       
-        "entry.602287959": typeText,                    
-        "entry.484252601": globalAmountWan + " 萬",     
-        "entry.1802951475": savingsText
-    };
+    alert('【精準方案額度已保留】\n即將為您跳轉至資料確認頁面，請直接點擊最下方的「提交」即可！\n同時會自動為您開啟 LINE 聯絡通道。');
     
-    for (var entryId in dataMapping) {
-        if (dataMapping.hasOwnProperty(entryId)) {
-            var hiddenInput = document.createElement("input");
-            hiddenInput.type = "hidden";
-            hiddenInput.name = entryId;
-            hiddenInput.value = dataMapping[entryId];
-            targetForm.appendChild(hiddenInput);
-        }
-    }
-    
-    // 塞入網頁底層並觸發原生提交（此方法最穩固，不受跨域阻擋政策影響）
-    document.body.appendChild(targetForm);
-    targetForm.submit(); 
-    document.body.removeChild(targetForm);
-    
-    // 提示並立刻轉跳
-    alert('【方案額度登記成功】\n已成功將您的初步試算資料為您保留！\n即將為您開啟 LINE 與規劃師進一步對接諮詢。');
+    // 先開啟 LINE
     window.open("https://line.me/ti/p/QgM9HRJ4P_", '_blank');
+    
+    // 將目前網頁直接切換到已經自動填好資料的 Google 表單
+    window.location.href = googleFormUrl;
 }
 </script>
 
