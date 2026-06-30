@@ -19,6 +19,7 @@
         .result-box { padding: 15px; border-radius: 8px; background-color: #e8f8f5; border-left: 5px solid #2cc990; }
         .result-item { margin-bottom: 10px; font-size: 15px; }
         .highlight { font-weight: bold; color: #e74c3c; font-size: 17px; }
+        .disclaimer { font-size: 12px; color: #7f8c8d; text-align: center; margin-top: 15px; line-height: 1.4; }
         .contact-section { margin-top: 15px; padding-top: 15px; border-top: 2px dashed #2cc990; }
         .contact-title { font-weight: bold; text-align: center; margin-bottom: 10px; font-size: 15px; }
         .input-row { display: flex; gap: 8px; margin-bottom: 10px; }
@@ -45,6 +46,11 @@
             <div class="result-item">銀行預估每月還款：<span id="bankMonthlyPay" style="font-weight: bold;">0</span> 元</div>
             <div class="result-item">整合後每月省下：<span id="monthlySavings" class="highlight">0</span> 元</div>
             
+            <!-- 加入的免責宣告 -->
+            <div class="disclaimer">
+                本試算僅供參考，實際利率與方案以專業諮詢評估為準。
+            </div>
+
             <div class="contact-section">
                 <div class="contact-title">✨ 獲取免費諮詢與規劃 ✨</div>
                 <div class="input-row">
@@ -76,6 +82,7 @@ function calculateSavings() {
     var currentPay = parseFloat(document.getElementById('currentMonthlyPay').value);
     if (isNaN(globalAmountWan) || isNaN(currentPay)) { alert('請填寫金額'); return; }
     var principal = globalAmountWan * 10000;
+    // 此處為範例試算公式，可依實際需求調整
     var bankPay = Math.round((principal * 0.025 / 12 * Math.pow(1 + 0.025 / 12, 240)) / (Math.pow(1 + 0.025 / 12, 240) - 1));
     globalSavingsMonth = currentPay - bankPay;
     document.getElementById('resultWrapper').style.display = 'block';
